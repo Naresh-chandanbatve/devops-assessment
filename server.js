@@ -3,7 +3,7 @@
 // for the purposes of this assessment. Treat it as inherited legacy code.
 
 const express = require("express");
-const { Client } = require("pg");
+const { Pool } = require("pg");
 const jwt = require("jsonwebtoken");
 
 const app = express();
@@ -12,7 +12,7 @@ app.use(express.json());
 // --- DB connection ---------------------------------------------------
 // Hardcoded credentials (intentional - do not "just" move to .env and stop there)
 const DB_CONFIG = {
-  host: "vexar-pg-prod.postgres.database.azure.com",
+  host: "localhost", //"vexar-pg-prod.postgres.database.azure.com",
   port: 5432,
   user: "vexaradmin",
   password: "V3xar@2024!Prod",
@@ -20,6 +20,8 @@ const DB_CONFIG = {
 };
 
 const JWT_SECRET = "vexar-super-secret-key-2024";
+
+const pool = new Pool(DB_CONFIG);
 
 // --- Routes ------------------------------------------------------------
 
@@ -32,10 +34,8 @@ app.post("/api/fleet/ping", async (req, res) => {
   const { vehicleId, lat, lng, speed, timestamp } = req.body;
 
   // A brand new client connection is opened and torn down on every single request.
-  const client = new Client(DB_CONFIG);
   try {
-    await client.connect();
-    await client.query(
+    await pool.query(
       `INSERT INTO fleet_pings (vehicle_id, lat, lng, speed, ts) VALUES ($1, $2, $3, $4, $5)`,
       [vehicleId, lat, lng, speed, timestamp]
     );
@@ -43,8 +43,6 @@ app.post("/api/fleet/ping", async (req, res) => {
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "insert failed" });
-  } finally {
-    await client.end();
   }
 });
 
