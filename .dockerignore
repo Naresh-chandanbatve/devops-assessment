@@ -1,0 +1,9 @@
+npm-debug.log
+.git
+.github
+.gitignore
+README.md
+Assessment-Notes.md
+docker-compose.yml
+.env
+.env.*

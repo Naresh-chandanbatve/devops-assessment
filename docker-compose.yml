@@ -1,23 +1,33 @@
-version: "3.8"
-
 services:
   app:
     build: .
     ports:
       - "3000:3000"
     environment:
-      - NODE_ENV=production
+      NODE_ENV: production
+      DB_HOST: db
+      DB_PORT: 5432
+      DB_USER: vexaradmin
+      DB_PASSWORD: ${DB_PASSWORD}
+      DB_NAME: vexar_fleet
+      JWT_SECRET: ${JWT_SECRET}
+    depends_on:
+      db:
+        condition: service_healthy
 
   db:
     image: postgres:15
-    ports:
-      - "0.0.0.0:5432:5432"
     environment:
-      - POSTGRES_USER=vexaradmin
-      - POSTGRES_PASSWORD=V3xar@2024!Prod
-      - POSTGRES_DB=vexar_fleet
+      POSTGRES_USER: vexaradmin
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: vexar_fleet
     volumes:
       - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vexaradmin -d vexar_fleet"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
 volumes:
   pgdata:

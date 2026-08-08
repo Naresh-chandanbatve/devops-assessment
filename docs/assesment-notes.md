@@ -11,11 +11,11 @@
 - OTP is accepted but never actually verified. Any OTP works for an existing phone number.
 - Login has SQL injection because phone is directly concatenated into the query. Confirmed locally.
 - /api/admin/drivers is accessible without authentication and returns driver data.
-- Fleet ping inserts successfully and data is stored in Postgres.
+- Fleet ping inserts succesfully and data is stored in Postgres.
 - schema.sql uses TIMESTAMP without timezone.
 
 
-- ## Changes made till now
+## Changes made till now
 
 - Changed PostgreSQL usage from creating a new client for every request to using a connection pool.
 - Moved DB host, port, user, password, database name and JWT secret to environment variables.

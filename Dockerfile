@@ -1,12 +1,15 @@
-FROM node:latest
+FROM node:24-bookworm-slim
 
 WORKDIR /app
 
-COPY . .
+COPY package*.json ./
 
-RUN npm install
+RUN npm ci --omit=dev
+
+COPY server.js schema.sql ./
+
+USER node
 
 EXPOSE 3000
-EXPOSE 22
 
 CMD ["node", "server.js"]
