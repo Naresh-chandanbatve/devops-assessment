@@ -12,4 +12,16 @@
 - Login has SQL injection because phone is directly concatenated into the query. Confirmed locally.
 - /api/admin/drivers is accessible without authentication and returns driver data.
 - Fleet ping inserts successfully and data is stored in Postgres.
-- fleet_pings.ts uses TIMESTAMP without timezone.
+- schema.sql uses TIMESTAMP without timezone.
+
+
+- ## Changes made till now
+
+- Changed PostgreSQL usage from creating a new client for every request to using a connection pool.
+- Moved DB host, port, user, password, database name and JWT secret to environment variables.
+- Added basic validation for fleet ping request data.
+- Changed login query to use a parameterized query instead of string concatenation.
+- Added a role column to drivers and set the test driver as admin.
+- Added JWT authentication and admin role check for /api/admin/drivers.
+- Added error handling to the admin drivers endpoint.
+- OTP verification is still not implemented because the starter repository does not contain an OTP provider or OTP storage mechanism.
