@@ -25,3 +25,8 @@
 - Added JWT authentication and admin role check for /api/admin/drivers.
 - Added error handling to the admin drivers endpoint.
 - OTP verification is still not implemented because the starter repository does not contain an OTP provider or OTP storage mechanism.
+- Added Docker Compose healthcheck for PostgreSQL.
+- Changed application database host to the Docker Compose db service.
+- Removed PostgreSQL host port exposure from Compose.
+- Added environment-based database credentials to Compose.
+- Updated Docker Compose startup to wait for a healthy database.
