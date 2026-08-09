@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 env:
-  ACR_NAME: vexardrivedevacr.azurecr.io
+  ACR_NAME: vexardrivedevacr
   IMAGE_NAME: vexardrive
   CONTAINER_APP_NAME: vexardrive-dev-app
   RESOURCE_GROUP: vexardrive-dev-rg
