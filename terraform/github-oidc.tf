@@ -13,7 +13,7 @@ resource "azurerm_federated_identity_credential" "github_actions" {
   parent_id           = azurerm_user_assigned_identity.github_actions.id
 
   issuer   = "https://token.actions.githubusercontent.com"
-  subject  = "repo:Naresh-chandanbatve/devops-assessment:ref:refs/heads/main"
+  subject  = "repo:Naresh-chandanbatve@70953218/devops-assessment@1327205384:ref:refs/heads/main"
   audience = ["api://AzureADTokenExchange"]
 }
 
