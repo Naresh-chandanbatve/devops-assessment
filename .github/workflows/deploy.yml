@@ -3,6 +3,17 @@ name: Deploy to Production
 on:
   push:
     branches: [main]
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+env:
+  ACR_NAME: vexardevacr
+  IMAGE_NAME: vexardrive
+  CONTAINER_APP_NAME: vexardrive-dev-app
+  RESOURCE_GROUP: vexardrive-dev-rg
 
 jobs:
   deploy:
@@ -10,18 +21,28 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
+      - name: Azure login
+        uses: azure/login@v2
+        with:
+          client-id: ${{ vars.AZURE_CLIENT_ID }}
+          tenant-id: ${{ vars.AZURE_TENANT_ID }}
+          subscription-id: ${{ vars.AZURE_SUBSCRIPTION_ID }}
+
       - name: Build Docker image
-        run: docker build -t vexar-fleet-ping:latest .
+        run: |
+          docker build \
+            -t ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }} \
+            -t ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:latest \
+            .
 
       - name: Push to registry
         run: |
-          echo "${{ secrets.ACR_PASSWORD }}" | docker login vexaracr.azurecr.io -u vexaradmin --password-stdin
-          docker tag vexar-fleet-ping:latest vexaracr.azurecr.io/vexar-fleet-ping:latest
-          docker push vexaracr.azurecr.io/vexar-fleet-ping:latest
+          docker push ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
+          docker push ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:latest
 
-      - name: Deploy to Azure Container Apps
+      - name: Deploy Container App
         run: |
           az containerapp update \
-            --name vexar-fleet-ping \
-            --resource-group vexar-prod-rg \
-            --image vexaracr.azurecr.io/vexar-fleet-ping:latest
+            --name ${{ env.CONTAINER_APP_NAME }} \
+            --resource-group ${{ env.RESOURCE_GROUP }} \
+            --image ${{ env.ACR_NAME }}.azurecr.io/${{ env.IMAGE_NAME }}:${{ github.sha }}
